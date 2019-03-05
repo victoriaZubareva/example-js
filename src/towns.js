@@ -22,7 +22,7 @@
 
 /*
  homeworkContainer - это контейнер для всех ваших домашних заданий
- Если вы создаете новые html-элементы и добавляете их на страницу, то дабавляйте их только в этот контейнер
+ Если вы создаете новые html-элементы и добавляете их на страницу, то добавляйте их только в этот контейнер
 
  Пример:
    const newDiv = document.createElement('div');
@@ -36,9 +36,36 @@ const homeworkContainer = document.querySelector('#homework-container');
  Массив городов пожно получить отправив асинхронный запрос по адресу
  https://raw.githubusercontent.com/smelukov/citiesTest/master/cities.json
  */
-function loadTowns() {
-}
 
+function loadTowns() {
+    return new Promise((resolve, reject) => {
+        fetch('https://raw.githubusercontent.com/smelukov/citiesTest/master/cities.json')
+            .then(response => {
+                if (response.status >= 400) {
+                  
+                    return Promise.reject();
+                }
+                
+                return response.json();
+            })
+            .then(towns => {
+                const townsSort = towns.sort((a, b) => {
+                    if (a.name > b.name) {
+                        return 1;
+                    } else if (a.name < b.name) {
+                        return -1;
+                    }
+
+                    return 0;
+                });
+                
+                resolve(townsSort);
+            })
+            .catch(() => {
+                reject();
+            })
+    })
+}
 /*
  Функция должна проверять встречается ли подстрока chunk в строке full
  Проверка должна происходить без учета регистра символов
@@ -51,6 +78,10 @@ function loadTowns() {
    isMatching('Moscow', 'Moscov') // false
  */
 function isMatching(full, chunk) {
+    full = full.toLowerCase();
+    chunk = chunk.toLowerCase();
+
+    return full.indexOf(chunk) !== -1;
 }
 
 /* Блок с надписью "Загрузка" */
@@ -62,8 +93,51 @@ const filterInput = homeworkContainer.querySelector('#filter-input');
 /* Блок с результатами поиска */
 const filterResult = homeworkContainer.querySelector('#filter-result');
 
+/* Кнопка "Повторить" */
+const buttornRepeat = document.createElement('button');
+
+buttornRepeat.textContent = 'Повторить';
+buttornRepeat.style.display = 'none';
+homeworkContainer.appendChild(buttornRepeat);
+
+/* Убрать загрузку */
+function offLoad() {
+    loadingBlock.style.display = 'none';
+    filterBlock.style.display = 'block';
+}
+
+offLoad();
+
+let towns;
+
+loadTowns()
+    .then(response => {
+        towns = response;
+    })
+    .catch(() => {
+        loadingBlock.innerHTML = 'Не удалось загрузить города';
+        loadingBlock.style.display = 'block';
+        filterBlock.style.display = 'none';
+        buttornRepeat.style.display = 'block';
+    })
+
+/* Обработчик нажатия клавиш в текстовом поле */
 filterInput.addEventListener('keyup', function() {
-    // это обработчик нажатия кливиш в текстовом поле
+
+    let valueInput = this.value;
+
+    filterResult.innerHTML = '';
+
+    if (valueInput !== '') {
+        for (let town of towns) {
+            if (isMatching(town.name, valueInput)) {
+                let elem = document.createElement('p');
+
+                elem.textContent = town.name;
+                filterResult.appendChild(elem);
+            }
+        }
+    }
 });
 
 export {
