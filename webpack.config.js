@@ -17,13 +17,12 @@ rules.push({
 
 module.exports = {
     entry: {
-        main: './src/index.js',
-        towns: './src/towns.js'
+        cookie: './src/cookie.js'
     },
     devServer: {
-        index: 'towns.html'
+        index: 'cookie.html'
     },
-    output: {
+    output: {   
         filename: '[name].[hash].js',
         path: path.resolve('dist')
     },
@@ -47,15 +46,15 @@ module.exports = {
     plugins: [
         new ExtractTextPlugin('styles.css'),
         new HtmlPlugin({
-            title: 'Main Homework',
-            template: 'main.hbs',
-            chunks: ['main']
-        }),
+            title: "Main Homework",
+            template: "main.hbs",
+            chunks: ["main"]
+          }),
         new HtmlPlugin({
-            title: 'Load towns',
-            template: './src/towns.hbs',
-            filename: 'towns.html',
-            chunks: ['towns']
+            title: 'Cookie filter',
+            template: 'cookie.hbs',
+            filename: 'cookie.html',
+            chunks: ['cookie']
         }),
         new CleanWebpackPlugin(['dist'])
     ]

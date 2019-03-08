@@ -1,5 +1,5 @@
 import assert from 'assert';
-let template = require('../src/cookie-content.hbs');
+let template = require('../cookie-content.hbs');
 
 function getCookies() {
     return document.cookie
